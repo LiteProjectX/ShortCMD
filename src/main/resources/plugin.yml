@@ -1,0 +1,46 @@
+name: ShortCmd
+version: 1.1
+main: com.bin.shortcmd.ShortCmdPlugin
+api-version: "1.16"
+commands:
+  shortcmd:
+    description: Execute commands from URLs or storage
+    usage: /shortcmd [help|run|save|savecmd|storage|lang|mode|reload]
+    aliases: [scmd]
+permissions:
+  shortcmd.help:
+    description: Access to help command
+    default: true
+  shortcmd.run:
+    description: Access to run commands from URLs
+    default: op
+  shortcmd.save:
+    description: Access to save URLs to storage
+    default: op
+  shortcmd.savecmd:
+    description: Access to save commands directly
+    default: op
+  shortcmd.storage:
+    description: Access to command storage
+    default: op
+  shortcmd.lang:
+    description: Access to language settings
+    default: op
+  shortcmd.mode:
+    description: Change command execution mode
+    default: op
+  shortcmd.reload:
+    description: Access to reload command
+    default: op
+  shortcmd.*:
+    description: All plugin permissions
+    default: op
+    children:
+      shortcmd.help: true
+      shortcmd.run: true
+      shortcmd.save: true
+      shortcmd.savecmd: true
+      shortcmd.storage: true
+      shortcmd.lang: true
+      shortcmd.mode: true
+      shortcmd.reload: true
