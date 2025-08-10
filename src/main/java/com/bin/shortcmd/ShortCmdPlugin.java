@@ -1,5 +1,7 @@
 package com.bin.shortcmd;
 
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,6 +20,7 @@ public class ShortCmdPlugin extends JavaPlugin {
     private FileConfiguration storage;
     private File modesFile;
     private FileConfiguration modes;
+    private boolean placeholderApiEnabled = false;
 
     @Override
     public void onEnable() {
@@ -43,6 +46,7 @@ public class ShortCmdPlugin extends JavaPlugin {
             config.addDefault("timeouts.read", 10000);
             config.addDefault("timeouts.internet-check", 3000);
             config.addDefault("command-delay", 100);
+            config.addDefault("enable-placeholderapi", true);
             config.options().copyDefaults(true);
             saveConfig();
 
@@ -60,12 +64,24 @@ public class ShortCmdPlugin extends JavaPlugin {
             }
             modes = YamlConfiguration.loadConfiguration(modesFile);
 
+            // Check for PlaceholderAPI
+            if (config.getBoolean("enable-placeholderapi", true)) {
+                if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                    placeholderApiEnabled = true;
+                    getLogger().info("PlaceholderAPI found and enabled!");
+                } else {
+                    getLogger().info("PlaceholderAPI not found, placeholder support disabled.");
+                }
+            } else {
+                getLogger().info("PlaceholderAPI support disabled in config.");
+            }
+
             // Register command
             ShortCmdCommand cmd = new ShortCmdCommand(this);
             getCommand("shortcmd").setExecutor(cmd);
             getCommand("shortcmd").setTabCompleter(cmd);
 
-            getLogger().info("ShortCmd enabled successfully!");
+            getLogger().info("ShortCmd enabled successfully! Version: " + getDescription().getVersion());
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Failed to enable plugin", e);
             setEnabled(false);
@@ -114,5 +130,9 @@ public class ShortCmdPlugin extends JavaPlugin {
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Could not save config.yml", e);
         }
+    }
+
+    public boolean isPlaceholderApiEnabled() {
+        return placeholderApiEnabled;
     }
 }
