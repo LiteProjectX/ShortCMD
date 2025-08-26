@@ -1,0 +1,4 @@
+# [ru] Хранит режимы выполнения команд для игроков
+# true - от имени консоли, false - от имени игрока
+# [en] Stores command execution modes for players
+# true - on behalf of the console, false - on behalf of the player

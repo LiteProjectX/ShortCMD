@@ -1,0 +1,177 @@
+# Основные настройки
+blocked-commands:
+  - op
+  - stop
+  - reload
+  - plugman
+
+language: ru # ru/en
+
+# Таймауты в миллисекундах
+timeouts:
+  connect: 10000    # Таймаут подключения
+  read: 10000       # Таймаут чтения
+  internet-check: 3000  # Проверка интернета
+command-delay: 100  # Задержка между командами
+
+# Система сообщений
+messages:
+  ru:
+    # Основные сообщения
+    no-args: "§7Используйте §6/shortcmd help"
+    help: "§6Доступные команды:"
+    help-line: "§7- §6/shortcmd %cmd% §7- %desc%"
+    help-desc: "показать это меню"
+    run-desc: "выполнить команды из Pastebin/URL"
+    save-desc: "сохранить ссылку на команды"
+    savecmd-desc: "скачать и сохранить команды из Pastebin/URL"
+    storage-desc: "управление сохранёнными командами (run/delete)"
+    lang-desc: "сменить язык (ru/en)"
+    mode-desc: "изменить режим выполнения (console/player)"
+    reload-desc: "перезагрузить конфигурацию"
+    no-permission: "§cУ вас недостаточно прав!"
+    unknown: "§cНеизвестная команда"
+    command-error: "§cОшибка выполнения"
+    
+    # Команда mode
+    mode-usage: "§cИспользуйте: §6/shortcmd mode <console|player>"
+    mode-set: "§aРежим выполнения изменён на §6%mode%"
+    mode-invalid: "§cНедопустимый режим. Используйте console или player"
+    player-only: "§cЭта команда только для игроков"
+
+    # Команда run
+    run-start: "§7Загрузка из: §6%link%"
+    run-success: "§aВыполнено §6%count% §aкоманд"
+    run-fail: "§cОшибка: %error%"
+    run-error: "§cИспользуйте: §6/shortcmd run <код/url>"
+    run-empty: "§6Нет команд"
+    no-internet: "§cНет интернета"
+    blocked: "§cКоманда заблокирована: §6%cmd%"
+
+    # Команда save
+    save-error: "§cИспользуйте: §6/shortcmd save <ссылка> <имя>"
+    save-success: "§aКоманда сохранена как §6%name%"
+    
+    # Команда savecmd
+    savecmd-start: "§7Скачивание команд из: §6%link%"
+    savecmd-success: "§aСохранено §6%count% §aкоманд как §6%name%"
+    savecmd-fail: "§cОшибка: %error%"
+    savecmd-error: "§cИспользуйте: §6/shortcmd savecmd <код/url> [имя]"
+    savecmd-empty: "§6Не найдено команд для сохранения"
+
+    # Команда storage
+    storage-error: "§cИспользуйте: §6/shortcmd storage <имя> <delete|run>"
+    storage-not-found: "§cКоманда §6%name% §cне найдена"
+    storage-delete: "§aУдалена команда §6%name%"
+    storage-run-start: "§7Выполнение команды §6%name%"
+    storage-run-success: "§aЗавершено выполнение §6%name%"
+    storage-action-error: "§cНеизвестное действие, используйте delete или run"
+
+    # Команда lang
+    lang-error: "§cИспользуйте: §6/shortcmd lang <ru|en>"
+    lang-invalid: "§cНеправильный язык, используйте ru или en"
+    lang-set: "§aЯзык изменен на §6%lang%"
+
+    # Команда reload
+    reload-success: "§aКонфиг перезагружен"
+    
+    # tab-complete
+    tab-complete:
+      command:
+        help: help
+        run: run
+        save: save
+        savecmd: savecmd
+        storage: storage
+        lang: lang
+        mode: mode
+        reload: reload
+      argument:
+        url: "<ссылка>"
+        name: "<имя>"
+      action:
+        delete: delete
+        run: run
+      mode:
+        console: console
+        player: player
+
+  en:
+    # Basic messages
+    no-args: "§7Use §6/shortcmd help"
+    help: "§6Available commands:"
+    help-line: "§7- §6/shortcmd %cmd% §7- %desc%"
+    help-desc: "show this menu"
+    run-desc: "execute commands from Pastebin/URL"
+    save-desc: "save command link"
+    savecmd-desc: "download and save commands from Pastebin/URL"
+    storage-desc: "manage saved commands (run/delete)"
+    lang-desc: "change language (ru/en)"
+    mode-desc: "change execution mode (console/player)"
+    reload-desc: "reload configuration"
+    no-permission: "§cYou don't have permission!"
+    unknown: "§cUnknown command"
+    command-error: "§cCommand error"
+    
+    # mode command
+    mode-usage: "§cUsage: §6/shortcmd mode <console|player>"
+    mode-set: "§aExecution mode set to §6%mode%"
+    mode-invalid: "§cInvalid mode. Use console or player"
+    player-only: "§cThis command is for players only"
+
+    # run command
+    run-start: "§7Loading from: §6%link%"
+    run-success: "§aExecuted §6%count% §acommands"
+    run-fail: "§cError: %error%"
+    run-error: "§cUsage: §6/shortcmd run <code/url>"
+    run-empty: "§6No commands"
+    no-internet: "§cNo internet"
+    blocked: "§cCommand blocked: §6%cmd%"
+
+    # save command
+    save-error: "§cUsage: §6/shortcmd save <link> <name>"
+    save-success: "§aCommand saved as §6%name%"
+    
+    # savecmd command
+    savecmd-start: "§7Downloading commands from: §6%link%"
+    savecmd-success: "§aSaved §6%count% §acommands as §6%name%"
+    savecmd-fail: "§cError: %error%"
+    savecmd-error: "§cUsage: §6/shortcmd savecmd <code/url> [name]"
+    savecmd-empty: "§6No commands found to save"
+
+    # storage command
+    storage-error: "§cUsage: §6/shortcmd storage <name> <delete|run>"
+    storage-not-found: "§cCommand §6%name% §cnot found"
+    storage-delete: "§aDeleted command §6%name%"
+    storage-run-start: "§7Executing command §6%name%"
+    storage-run-success: "§aFinished executing §6%name%"
+    storage-action-error: "§cUnknown action, use delete or run"
+
+    # lang command
+    lang-error: "§cUsage: §6/shortcmd lang <ru|en>"
+    lang-invalid: "§cInvalid language, use ru or en"
+    lang-set: "§aLanguage set to §6%lang%"
+
+    # reload command
+    reload-success: "§aConfig reloaded"
+    
+    # tab-complete
+    tab-complete:
+      command:
+        help: help
+        run: run
+        save: save
+        savecmd: savecmd
+        storage: storage
+        lang: lang
+        mode: mode
+        reload: reload
+      argument:
+        url: "<url>"
+        name: "<name>"
+      action:
+        delete: delete
+        run: run
+      mode:
+        console: console
+        player: player

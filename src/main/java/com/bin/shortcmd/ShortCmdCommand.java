@@ -29,14 +29,55 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
 
     private void loadPlayerModes() {
         FileConfiguration modesConfig = plugin.getModesConfig();
+        
+        // Check if we have the old structure (direct UUID keys)
+        boolean hasDirectKeys = false;
         for (String key : modesConfig.getKeys(false)) {
-            playerModes.put(UUID.fromString(key), modesConfig.getBoolean(key));
+            try {
+                UUID.fromString(key);
+                hasDirectKeys = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Not a UUID, continue checking
+            }
+        }
+        
+        if (hasDirectKeys) {
+            // Old structure - load directly
+            for (String key : modesConfig.getKeys(false)) {
+                try {
+                    playerModes.put(UUID.fromString(key), modesConfig.getBoolean(key));
+                } catch (IllegalArgumentException e) {
+                    // Invalid UUID, skip
+                    plugin.getLogger().warning("Invalid UUID in modes.yml: " + key);
+                }
+            }
+        } else {
+            // New structure - load from "modes" section
+            if (modesConfig.contains("modes")) {
+                for (String key : modesConfig.getConfigurationSection("modes").getKeys(false)) {
+                    try {
+                        playerModes.put(UUID.fromString(key), modesConfig.getBoolean("modes." + key));
+                    } catch (IllegalArgumentException e) {
+                        // Invalid UUID, skip
+                        plugin.getLogger().warning("Invalid UUID in modes.yml: " + key);
+                    }
+                }
+            }
         }
     }
 
     private void savePlayerMode(UUID uuid, boolean mode) {
         playerModes.put(uuid, mode);
-        plugin.getModesConfig().set(uuid.toString(), mode);
+        
+        // Use new structure with "modes" section
+        plugin.getModesConfig().set("modes." + uuid.toString(), mode);
+        
+        // Clean up old structure if it exists
+        if (plugin.getModesConfig().contains(uuid.toString())) {
+            plugin.getModesConfig().set(uuid.toString(), null);
+        }
+        
         plugin.saveModesConfig();
     }
 
@@ -377,6 +418,11 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
         plugin.reloadConfig();
         plugin.saveStorage();
         plugin.saveModesConfig();
+        
+        // Reload player modes
+        playerModes.clear();
+        loadPlayerModes();
+        
         sendMessage(sender, "reload-success");
         return true;
     }
