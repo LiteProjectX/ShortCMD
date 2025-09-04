@@ -1,6 +1,7 @@
+### [Look before you put it on the server](https://pastebin.com/raw/GhT5Lytb)
 # ShortCmd - Plugin for executing commands from URLs | Плагин для выполнения команд из URL
 
-## English Version
+## English
 
 ### Description
 
@@ -76,7 +77,7 @@ command-delay: 100  # Delay between commands
 
 ---
 
-## Русская версия
+## Русская
 
 ### Описание
 
@@ -153,3 +154,4 @@ command-delay: 100  # Задержка между командами
 ### Лицензия
 
 Плагин распространяется под лицензией MIT. Подробнее см. в файле LICENSE.
+
