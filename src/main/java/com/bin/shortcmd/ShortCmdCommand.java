@@ -1,5 +1,6 @@
 package com.bin.shortcmd;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -28,14 +29,55 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
 
     private void loadPlayerModes() {
         FileConfiguration modesConfig = plugin.getModesConfig();
+        
+        // Check if we have the old structure (direct UUID keys)
+        boolean hasDirectKeys = false;
         for (String key : modesConfig.getKeys(false)) {
-            playerModes.put(UUID.fromString(key), modesConfig.getBoolean(key));
+            try {
+                UUID.fromString(key);
+                hasDirectKeys = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Not a UUID, continue checking
+            }
+        }
+        
+        if (hasDirectKeys) {
+            // Old structure - load directly
+            for (String key : modesConfig.getKeys(false)) {
+                try {
+                    playerModes.put(UUID.fromString(key), modesConfig.getBoolean(key));
+                } catch (IllegalArgumentException e) {
+                    // Invalid UUID, skip
+                    plugin.getLogger().warning("Invalid UUID in modes.yml: " + key);
+                }
+            }
+        } else {
+            // New structure - load from "modes" section
+            if (modesConfig.contains("modes")) {
+                for (String key : modesConfig.getConfigurationSection("modes").getKeys(false)) {
+                    try {
+                        playerModes.put(UUID.fromString(key), modesConfig.getBoolean("modes." + key));
+                    } catch (IllegalArgumentException e) {
+                        // Invalid UUID, skip
+                        plugin.getLogger().warning("Invalid UUID in modes.yml: " + key);
+                    }
+                }
+            }
         }
     }
 
     private void savePlayerMode(UUID uuid, boolean mode) {
         playerModes.put(uuid, mode);
-        plugin.getModesConfig().set(uuid.toString(), mode);
+        
+        // Use new structure with "modes" section
+        plugin.getModesConfig().set("modes." + uuid.toString(), mode);
+        
+        // Clean up old structure if it exists
+        if (plugin.getModesConfig().contains(uuid.toString())) {
+            plugin.getModesConfig().set(uuid.toString(), null);
+        }
+        
         plugin.saveModesConfig();
     }
 
@@ -180,6 +222,7 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
                 while ((line = reader.readLine()) != null) {
                     line = line.trim();
                     if (!line.isEmpty()) {
+                        line = replacePlaceholders(sender, line);
                         executeCommand(sender, line, blockedCommands);
                         executedCount++;
                         if (delay > 0) {
@@ -311,7 +354,8 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
                 case "run":
                     sendMessage(sender, "storage-run-start", "%name%", name);
                     for (String cmd : savedCommands.split("\n")) {
-                        executeCommand(sender, cmd.trim(), plugin.getConfig().getStringList("blocked-commands"));
+                        cmd = replacePlaceholders(sender, cmd.trim());
+                        executeCommand(sender, cmd, plugin.getConfig().getStringList("blocked-commands"));
                     }
                     sendMessage(sender, "storage-run-success", "%name%", name);
                     break;
@@ -374,6 +418,11 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
         plugin.reloadConfig();
         plugin.saveStorage();
         plugin.saveModesConfig();
+        
+        // Reload player modes
+        playerModes.clear();
+        loadPlayerModes();
+        
         sendMessage(sender, "reload-success");
         return true;
     }
@@ -397,6 +446,15 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
         
         sendMessage(sender, "run-fail", "%error%", error);
         plugin.getLogger().log(Level.SEVERE, "Command execution failed", e);
+    }
+
+    private String replacePlaceholders(CommandSender sender, String text) {
+        if (!plugin.isPlaceholderApiEnabled() || !(sender instanceof Player)) {
+            return text;
+        }
+        
+        Player player = (Player) sender;
+        return PlaceholderAPI.setPlaceholders(player, text);
     }
 
     private void executeCommand(CommandSender sender, String command, List<String> blockedCommands) {
@@ -441,6 +499,7 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
                 while ((line = reader.readLine()) != null) {
                     line = line.trim();
                     if (!line.isEmpty()) {
+                        line = replacePlaceholders(sender, line);
                         executeCommand(sender, line, blockedCommands);
                         if (delay > 0) {
                             Thread.sleep(delay);
@@ -541,6 +600,10 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
             }
         }
         
+        if (plugin.isPlaceholderApiEnabled() && sender instanceof Player) {
+            message = PlaceholderAPI.setPlaceholders((Player) sender, message);
+        }
+        
         sender.sendMessage(message.replace("&", "§"));
     }
 
@@ -552,6 +615,11 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
         if (line == null || desc == null) {
             plugin.getLogger().warning("Help message not found for: " + descKey);
             return;
+        }
+        
+        if (plugin.isPlaceholderApiEnabled() && sender instanceof Player) {
+            line = PlaceholderAPI.setPlaceholders((Player) sender, line);
+            desc = PlaceholderAPI.setPlaceholders((Player) sender, desc);
         }
         
         sender.sendMessage(line.replace("%cmd%", cmd)
