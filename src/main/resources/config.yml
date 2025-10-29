@@ -14,6 +14,8 @@ timeouts:
   internet-check: 3000  # Проверка интернета
 command-delay: 100  # Задержка между командами
 
+enable-placeholderapi: true
+
 # Система сообщений
 messages:
   ru:
@@ -32,6 +34,7 @@ messages:
     no-permission: "§cУ вас недостаточно прав!"
     unknown: "§cНеизвестная команда"
     command-error: "§cОшибка выполнения"
+    name-exists: "§cИмя §6%name% §cуже существует!"
     
     # Команда mode
     mode-usage: "§cИспользуйте: §6/shortcmd mode <console|player>"
@@ -63,7 +66,7 @@ messages:
     storage-error: "§cИспользуйте: §6/shortcmd storage <имя> <delete|run>"
     storage-not-found: "§cКоманда §6%name% §cне найдена"
     storage-delete: "§aУдалена команда §6%name%"
-    storage-run-start: "§7Выполнение команды §6%name%"
+    storage-run-start: "§7Выполнение команда §6%name%"
     storage-run-success: "§aЗавершено выполнение §6%name%"
     storage-action-error: "§cНеизвестное действие, используйте delete или run"
 
@@ -112,6 +115,7 @@ messages:
     no-permission: "§cYou don't have permission!"
     unknown: "§cUnknown command"
     command-error: "§cCommand error"
+    name-exists: "§cName §6%name% §calready exists!"
     
     # mode command
     mode-usage: "§cUsage: §6/shortcmd mode <console|player>"
