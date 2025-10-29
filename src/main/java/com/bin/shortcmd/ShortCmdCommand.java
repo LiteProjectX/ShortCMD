@@ -1,5 +1,6 @@
 package com.bin.shortcmd;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -180,6 +181,7 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
                 while ((line = reader.readLine()) != null) {
                     line = line.trim();
                     if (!line.isEmpty()) {
+                        line = replacePlaceholders(sender, line);
                         executeCommand(sender, line, blockedCommands);
                         executedCount++;
                         if (delay > 0) {
@@ -311,7 +313,8 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
                 case "run":
                     sendMessage(sender, "storage-run-start", "%name%", name);
                     for (String cmd : savedCommands.split("\n")) {
-                        executeCommand(sender, cmd.trim(), plugin.getConfig().getStringList("blocked-commands"));
+                        cmd = replacePlaceholders(sender, cmd.trim());
+                        executeCommand(sender, cmd, plugin.getConfig().getStringList("blocked-commands"));
                     }
                     sendMessage(sender, "storage-run-success", "%name%", name);
                     break;
@@ -399,6 +402,15 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
         plugin.getLogger().log(Level.SEVERE, "Command execution failed", e);
     }
 
+    private String replacePlaceholders(CommandSender sender, String text) {
+        if (!plugin.isPlaceholderApiEnabled() || !(sender instanceof Player)) {
+            return text;
+        }
+        
+        Player player = (Player) sender;
+        return PlaceholderAPI.setPlaceholders(player, text);
+    }
+
     private void executeCommand(CommandSender sender, String command, List<String> blockedCommands) {
         String baseCommand = command.split("\\s+")[0].toLowerCase(Locale.ROOT);
         
@@ -441,6 +453,7 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
                 while ((line = reader.readLine()) != null) {
                     line = line.trim();
                     if (!line.isEmpty()) {
+                        line = replacePlaceholders(sender, line);
                         executeCommand(sender, line, blockedCommands);
                         if (delay > 0) {
                             Thread.sleep(delay);
@@ -541,6 +554,10 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
             }
         }
         
+        if (plugin.isPlaceholderApiEnabled() && sender instanceof Player) {
+            message = PlaceholderAPI.setPlaceholders((Player) sender, message);
+        }
+        
         sender.sendMessage(message.replace("&", "§"));
     }
 
@@ -552,6 +569,11 @@ public class ShortCmdCommand implements CommandExecutor, TabCompleter {
         if (line == null || desc == null) {
             plugin.getLogger().warning("Help message not found for: " + descKey);
             return;
+        }
+        
+        if (plugin.isPlaceholderApiEnabled() && sender instanceof Player) {
+            line = PlaceholderAPI.setPlaceholders((Player) sender, line);
+            desc = PlaceholderAPI.setPlaceholders((Player) sender, desc);
         }
         
         sender.sendMessage(line.replace("%cmd%", cmd)
